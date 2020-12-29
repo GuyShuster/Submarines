@@ -9,6 +9,8 @@ Date: 29/12/2020
 """
 
 HOST_PORT = 8765
+MAX_CONNECTIONS = 1
+DEFAULT_TIMEOUT = 3600.0  # one minute
 
 BOARD_SIZE = 10
 
@@ -21,6 +23,9 @@ DOWN = 'd'
 LEFT = 'l'
 RIGHT = 'r'
 DIRECTIONS = [UP, DOWN, LEFT, RIGHT]
+
+HOST = 'h'
+CONNECT = 'c'
 
 GREETING_MESSAGE = '''Welcome! first we'll ask you some questions and then we will start the game.
 '''
@@ -38,3 +43,7 @@ This will happen for each ship, and then the game will start.
 '''
 SET_BOARD_COORDINATE_INPUT_PROMPT = '''Please enter the starting coordinates [row, column] for the ship of size'''
 SET_BOARD_DIRECTION_PROMPT = '''Please enter the direction of the ship's placement:'''
+
+START_COMMUNICATION_INPUT_PROMPT = '''Great! now when your board is ready we can connect to another player and play.
+Please tell us if you want to be a host or connect to another player (type h to host/c to connect):'''
+START_COMMUNICATION_IP_PROMPT = '''Please enter the ip address of the host you would like to connect to:'''

@@ -43,4 +43,22 @@ class InputStructureValidator:
                 continue
             return direction
 
+    def get_host_or_connect_input(self):
+        while True:
+            host_or_connect = input().strip().lower()
+            options = [constants.HOST, constants.CONNECT]
+            if host_or_connect not in options:
+                print(f'''The input must be one of following {', '.join(options)}. Try again...''')
+                continue
+            return host_or_connect
+
+    def get_ip_from_user(self):
+        while True:
+            ip = input()
+            ip_parts = ip.split('.')
+            if len(ip_parts) != 4 or not all([self.check_if_number(ip_part) for ip_part in ip_parts]):
+                print(f'''An ip address is of the following structure: X.Y.Z.W, all numbers. Try again...''')
+                continue
+            return ip
+
 

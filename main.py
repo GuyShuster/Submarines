@@ -14,11 +14,11 @@ import game_manager
 
 
 def main():
-    print('\nStarting the Submarines game')
+    print('\nStarting the Submarines game\n')
     print('*********************************************************************************************************\n')
     game_manager.GameManager().main_game_loop()
     print('\n*********************************************************************************************************')
-    print('Game finished! Thanks for playing...')
+    print('\nGame finished! Thanks for playing...\n')
 
 
 if __name__ == '__main__':
