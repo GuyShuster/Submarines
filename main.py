@@ -10,9 +10,15 @@ Usage: python main.py
 
 """
 
+import game_manager
+
 
 def main():
-    pass
+    print('\nStarting the Submarines game')
+    print('*********************************************************************************************************\n')
+    game_manager.GameManager().main_game_loop()
+    print('\n*********************************************************************************************************')
+    print('Game finished! Thanks for playing...')
 
 
 if __name__ == '__main__':
