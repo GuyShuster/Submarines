@@ -12,6 +12,8 @@ import constants
 import input_structure_validator
 import board
 import network
+import serializer
+import deserializer
 
 
 class GameManager:
@@ -20,6 +22,9 @@ class GameManager:
         self.input_handler = input_structure_validator.InputStructureValidator()
         self.board = board.Board()
         self.network = network.Network()
+        self.serializer = serializer.Serializer()
+        self.deserializer = deserializer.Deserializer()
+        self.host = None
 
     def set_board(self):
         print(constants.SET_BOARD_GREETING_MESSAGE)
@@ -40,6 +45,7 @@ class GameManager:
         host_or_connect = self.input_handler.get_host_or_connect_input()
         if host_or_connect == constants.HOST:
             self.network.listen_for_connections()
+            self.host = True
         else:
             while True:
                 print(constants.START_COMMUNICATION_IP_PROMPT)
@@ -48,9 +54,25 @@ class GameManager:
                     print(f'Connected to {ip} successfully!')
                     break
                 print('Connection timed out, trying again...')
+            self.host = False
+
+    def start_game(self):
+        if self.host:
+            self.network.send_data(self.serializer.get_hello())
+            if self.deserializer.decode(self.network.receive_data()) != 'OLLEH':
+                print('Protocol error')
+                return
+        else:
+            if self.deserializer.decode(self.network.receive_data()) != 'HELLO':
+                print('Protocol error')
+                return
+            self.network.send_data(self.serializer.get_olleh())
+
 
     def main_game_loop(self):
         print(constants.GREETING_MESSAGE)
-        self.set_board()
-        self.start_communication()
-        self.network.disconnect()
+        # self.set_board()
+        # self.start_communication()
+        # self.start_game()
+        # self.network.disconnect()
+

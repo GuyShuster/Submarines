@@ -8,7 +8,13 @@ Date: 29/12/2020
 
 """
 
+import constants
+
 
 class Deserializer:
-    pass
 
+    def __int__(self):
+        pass
+
+    def decode(self, data):
+        return data.decode(constants.ENCODING)

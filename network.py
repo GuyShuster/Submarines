@@ -36,6 +36,16 @@ class Network:
         except socket.timeout as _:
             return False
 
+    def send_data(self, data):
+        try:
+            self.socket.sendall(data)
+            return True
+        except OSError as socket_error:
+            return False
+
+    def receive_data(self):
+        pass
+
     def disconnect(self):
         try:
             self.socket.shutdown(socket.SHUT_RDWR)
