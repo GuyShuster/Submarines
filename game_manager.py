@@ -56,23 +56,56 @@ class GameManager:
                 print('Connection timed out, trying again...')
             self.host = False
 
-    def start_game(self):
+    def __safe_send(self, data):
+        try:
+            self.network.send_data(data)
+        except RuntimeError as runtime_error:
+            print(f'A network error occurred: {runtime_error.__str__()}. Exiting...')
+            exit(1)
+
+    def __safe_receive(self, message_size, attempts=1):
+        for _ in range(attempts):
+            try:
+                return self.network.receive_data(message_size)
+            except TimeoutError as _:
+                continue
+            except RuntimeError as runtime_error:
+                print(f'A network error occurred: {runtime_error.__str__()}. Exiting...')
+                exit(1)
+
+    def synchronize_communication(self):
+        self.network.set_timeout(constants.SYNCHRONIZATION_TIMEOUT)
         if self.host:
-            self.network.send_data(self.serializer.get_hello())
-            if self.deserializer.decode(self.network.receive_data()) != 'OLLEH':
-                print('Protocol error')
-                return
+            for attempt_num in range(constants.MAX_CONNECTION_ATTEMPTS):
+                print(f'Synchronizing with client. Attempt number {attempt_num + 1}')
+                self.__safe_send(self.serializer.get_hello())
+                data = self.__safe_receive(len(self.serializer.get_olleh()))
+                if data is None:  # we didn't receive anything
+                    continue
+                if data != self.serializer.get_olleh():
+                    print('The communication had a protocol error. Exiting...')
+                    exit(1)
+                if data == self.serializer.get_olleh():
+                    print('Synchronized successfully!')
+                    return
         else:
-            if self.deserializer.decode(self.network.receive_data()) != 'HELLO':
-                print('Protocol error')
-                return
-            self.network.send_data(self.serializer.get_olleh())
+            print('Waiting for host to synchronize...')
+            data = self.__safe_receive(len(self.serializer.get_hello()), attempts=constants.MAX_CONNECTION_ATTEMPTS)
+            if data is None or data != self.serializer.get_hello():
+                print('The communication had a protocol error. Exiting...')
+                exit(1)
+            self.__safe_send(self.serializer.get_olleh())
+            print('Synchronized successfully!')
+
+    def start_game(self):
+        self.network.set_timeout(constants.GAME_TIMEOUT)
 
 
     def main_game_loop(self):
         print(constants.GREETING_MESSAGE)
         # self.set_board()
-        # self.start_communication()
+        self.start_communication()
+        # self.synchronize_communication()
         # self.start_game()
         # self.network.disconnect()
 

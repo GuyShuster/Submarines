@@ -29,7 +29,6 @@ class Network:
 
     def connect_to_host(self, ip):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(constants.DEFAULT_TIMEOUT)
         try:
             self.socket.connect((ip, constants.HOST_PORT))
             return True
@@ -39,12 +38,25 @@ class Network:
     def send_data(self, data):
         try:
             self.socket.sendall(data)
-            return True
-        except OSError as socket_error:
-            return False
+        except OSError as _:
+            raise RuntimeError('Socket connection broke')
 
-    def receive_data(self):
-        pass
+    def receive_data(self, message_size):
+        chunks = []
+        received_bytes_count = 0
+        while received_bytes_count < message_size:
+            try:
+                chunk = self.socket.recv(constants.MAX_MESSAGE_LENGTH)
+            except socket.timeout as _:
+                raise TimeoutError()
+            if chunk == b'':
+                raise RuntimeError('Socket connection broke')
+            chunks.append(chunk)
+            received_bytes_count = received_bytes_count + len(chunk)
+        return b''.join(chunks)
+
+    def set_timeout(self, timeout):
+        self.socket.settimeout(timeout)
 
     def disconnect(self):
         try:
