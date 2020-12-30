@@ -11,10 +11,9 @@ Date: 29/12/2020
 import constants
 
 
-class Deserializer:
+def decode_message_size(message_size):
+    return int.from_bytes(message_size[:constants.MESSAGE_LENGTH_SIZE], byteorder=constants.BYTEORDER)
 
-    def __int__(self):
-        pass
 
-    def decode(self, data):
-        return data.decode(constants.ENCODING)
+def decode_message(data):
+    return data.decode(constants.ENCODING)

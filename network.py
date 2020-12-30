@@ -10,7 +10,7 @@ Date: 29/12/2020
 
 import socket
 import constants
-
+import deserializer
 
 class Network:
 
@@ -41,16 +41,29 @@ class Network:
         except OSError as _:
             raise RuntimeError('Socket connection broke')
 
-    def receive_data(self, message_size):
+    def receive_data(self):
         chunks = []
         received_bytes_count = 0
+
+        try:
+            message_size = self.socket.recv(constants.MESSAGE_LENGTH_SIZE)
+            message_size = deserializer.decode_message_size(message_size)
+        except socket.timeout as _:
+            raise TimeoutError()
+        except OSError as _:
+            raise RuntimeError('Socket connection broke')
+
         while received_bytes_count < message_size:
             try:
-                chunk = self.socket.recv(constants.MAX_MESSAGE_LENGTH)
+                chunk = self.socket.recv(message_size - received_bytes_count)
             except socket.timeout as _:
                 raise TimeoutError()
+            except OSError as _:
+                raise RuntimeError('Socket connection broke')
+
             if chunk == b'':
                 raise RuntimeError('Socket connection broke')
+
             chunks.append(chunk)
             received_bytes_count = received_bytes_count + len(chunk)
         return b''.join(chunks)

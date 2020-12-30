@@ -14,7 +14,18 @@ GAME_TIMEOUT = 3600.0  # one minute
 SYNCHRONIZATION_TIMEOUT = 10.0
 MAX_CONNECTION_ATTEMPTS = 10
 ENCODING = 'utf-8'
+BYTEORDER = 'big'
+MESSAGE_LENGTH_SIZE = 3
 MAX_MESSAGE_LENGTH = 16
+MESSAGE_LENGTH_INDEX = 0
+MESSAGE_INDEX = 1
+
+HELLO = 'HELLO'
+OLLEH = 'OLLEH'
+HIT = 'HIT'
+MISS = 'MISS'
+SINK = 'SINK'
+GG = 'GG'
 
 BOARD_SIZE = 10
 
@@ -51,3 +62,5 @@ SET_BOARD_DIRECTION_PROMPT = '''Please enter the direction of the ship's placeme
 START_COMMUNICATION_INPUT_PROMPT = '''Great! now when your board is ready we can connect to another player and play.
 Please tell us if you want to be a host or connect to another player (type h to host/c to connect):'''
 START_COMMUNICATION_IP_PROMPT = '''Please enter the ip address of the host you would like to connect to:'''
+
+GAME_COORDINATE_INPUT_PROMPT = '''Please enter the coordinates [row, column] you want to attack'''

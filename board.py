@@ -9,7 +9,7 @@ Date: 29/12/2020
 """
 
 import constants
-
+import serializer
 
 class Board:
     BLANK_SIGN = '*'
@@ -57,9 +57,55 @@ class Board:
         })
         return True
 
+    def enemy_won_check(self):
+        for ship in self.ships:
+            if any([self.board[row][column] == Board.SHIP_SIGN
+                    for row, column
+                    in Board.__board_iterator(ship['row'], ship['column'], ship['direction'], ship['ship_size'])]):
+                return False
+        return True
+
+    def sunk_ship_test(self):
+        ship_to_remove = None
+        for ship in self.ships:
+            if all([self.board[row][column] == Board.BLANK_SIGN
+                    for row, column
+                    in Board.__board_iterator(ship['row'], ship['column'], ship['direction'], ship['ship_size'])]):
+
+                ship_to_remove = ship
+        if ship_to_remove:
+            self.ships.remove(ship_to_remove)
+            return True
+        return False
+
+    def attack(self, row, column):
+        if row < 0 or row >= constants.BOARD_SIZE or column < 0 or column >= constants.BOARD_SIZE:
+            print(f'\nThe other player attacked you at {row}, {column}, missed the board completely...')
+            print('It is now your turn!\n')
+            return serializer.get_miss()
+
+        sign_before_hit = self.board[row][column]  # save the sign
+        self.board[row][column] = Board.BLANK_SIGN  # hit
+
+        if self.enemy_won_check():
+            print(f'\nThe other player attacked you at {row}, {column}, and won the game.\nBetter luck next time!\n')
+            return serializer.get_gg()
+        if self.sunk_ship_test():
+            print(f'\nThe other player attacked you at {row}, {column}, and sunk your ship...')
+            print('It is their turn again now...\n')
+            return serializer.get_sink()
+        if sign_before_hit == Board.SHIP_SIGN:
+            print(f'\nThe other player attacked you at {row}, {column}, and hit your ship...')
+            print('It is their turn again now...\n')
+            return serializer.get_hit()
+
+        print(f'\nThe other player attacked you at {row}, {column}, and missed!')
+        print('It is now your turn!\n')
+        return serializer.get_miss()
+
     def pretty_print_board(self):
-        print(f'''\t {' '.join([str(index) for index in range(constants.BOARD_SIZE)])}''')
-        print(f'''\t {''.join(['- ' for _ in range(constants.BOARD_SIZE)])}''')
+        print(f'''\t     {' '.join([str(index) for index in range(constants.BOARD_SIZE)])}''')
+        print(f'''\t     {''.join(['- ' for _ in range(constants.BOARD_SIZE)])}''')
         for index, line in enumerate(self.board):
-            print(f'''{index}  | {' '.join(line)} |''')
-        print(f'''\t {''.join(['- ' for _ in range(constants.BOARD_SIZE)])}''')
+            print(f'''\t{index}  | {' '.join(line)} |''')
+        print(f'''\t     {''.join(['- ' for _ in range(constants.BOARD_SIZE)])}''')

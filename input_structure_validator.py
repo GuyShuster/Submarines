@@ -56,9 +56,9 @@ class InputStructureValidator:
         while True:
             ip = input()
             ip_parts = ip.split('.')
-            if len(ip_parts) != 4 or not all([self.check_if_number(ip_part) for ip_part in ip_parts]):
+            if len(ip_parts) != 4 or not all([self.check_if_number(ip_part.strip()) for ip_part in ip_parts]):
                 print(f'''An ip address is of the following structure: X.Y.Z.W, all numbers. Try again...''')
                 continue
-            return ip
+            return ip.strip()
 
 
